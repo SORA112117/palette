@@ -1,0 +1,251 @@
+//
+//  QuickActionCard.swift
+//  palette
+//
+//  Created by Claude on 2025/08/14.
+//
+
+import SwiftUI
+
+// MARK: - クイックアクションカード
+struct QuickActionCard: View {
+    
+    // MARK: - Properties
+    let title: String
+    let subtitle: String
+    let icon: String
+    let gradientColors: [Color]
+    let action: () -> Void
+    
+    // MARK: - State
+    @State private var isPressed = false
+    
+    // MARK: - Body
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Image(systemName: icon)
+                        .font(.title2)
+                        .foregroundColor(.white)
+                        .frame(width: 40, height: 40)
+                        .background(
+                            Circle()
+                                .fill(.white.opacity(0.2))
+                        )
+                    
+                    Spacer()
+                    
+                    Image(systemName: "arrow.up.right")
+                        .font(.title3)
+                        .foregroundColor(.white.opacity(0.8))
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                    
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.9))
+                        .lineLimit(2)
+                }
+                
+                Spacer()
+            }
+            .padding(20)
+            .frame(height: 140)
+            .background(
+                LinearGradient(
+                    colors: gradientColors,
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .cornerRadius(20)
+            .shadow(
+                color: gradientColors.first?.opacity(0.3) ?? .clear,
+                radius: 8,
+                x: 0,
+                y: 4
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.easeInOut(duration: 0.1), value: isPressed)
+        .onLongPressGesture(minimumDuration: 0) { isPressing in
+            isPressed = isPressing
+        } perform: {}
+    }
+}
+
+// MARK: - プリセットアクションカード
+extension QuickActionCard {
+    
+    /// 写真から抽出カード
+    static func photoExtraction(action: @escaping () -> Void) -> QuickActionCard {
+        QuickActionCard(
+            title: "写真から抽出",
+            subtitle: "お気に入りの写真から美しい色を見つけよう",
+            icon: "photo",
+            gradientColors: [Color.primaryPink, Color.primaryYellow],
+            action: action
+        )
+    }
+    
+    /// カメラ撮影カード
+    static func camera(action: @escaping () -> Void) -> QuickActionCard {
+        QuickActionCard(
+            title: "カメラで撮影",
+            subtitle: "今この瞬間の色をキャプチャ",
+            icon: "camera",
+            gradientColors: [Color.primaryTurquoise, Color.primaryBlue],
+            action: action
+        )
+    }
+    
+    /// ギャラリーカード
+    static func gallery(action: @escaping () -> Void) -> QuickActionCard {
+        QuickActionCard(
+            title: "ギャラリー",
+            subtitle: "過去に作成したパレットを閲覧",
+            icon: "rectangle.stack",
+            gradientColors: [Color.primaryBlue, Color.primaryGreen],
+            action: action
+        )
+    }
+    
+    /// ランダムパレットカード
+    static func randomPalette(action: @escaping () -> Void) -> QuickActionCard {
+        QuickActionCard(
+            title: "ランダム生成",
+            subtitle: "インスピレーションが欲しい時に",
+            icon: "dice",
+            gradientColors: [Color.primaryGreen, Color.primaryYellow],
+            action: action
+        )
+    }
+    
+    /// トレンドカード
+    static func trending(action: @escaping () -> Void) -> QuickActionCard {
+        QuickActionCard(
+            title: "トレンド",
+            subtitle: "人気の色の組み合わせを発見",
+            icon: "chart.line.uptrend.xyaxis",
+            gradientColors: [Color(hex: "#A29BFE"), Color(hex: "#6C5CE7")],
+            action: action
+        )
+    }
+    
+    /// 壁紙作成カード
+    static func wallpaper(action: @escaping () -> Void) -> QuickActionCard {
+        QuickActionCard(
+            title: "壁紙作成",
+            subtitle: "オリジナルのグラデーション壁紙",
+            icon: "iphone",
+            gradientColors: [Color(hex: "#FF7675"), Color(hex: "#FDCB6E")],
+            action: action
+        )
+    }
+}
+
+// MARK: - Recent Palette Card
+struct RecentPaletteCard: View {
+    let palette: ColorPalette
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(palette.autoGeneratedTitle)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
+                        
+                        Text("\(palette.colors.count)色")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "arrow.up.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                // カラーパレット表示
+                HStack(spacing: 4) {
+                    ForEach(palette.colors.prefix(5)) { color in
+                        Circle()
+                            .fill(color.color)
+                            .frame(width: 24, height: 24)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.white, lineWidth: 1)
+                                    .shadow(color: .black.opacity(0.1), radius: 1)
+                            )
+                    }
+                    
+                    if palette.colors.count > 5 {
+                        Text("+\(palette.colors.count - 5)")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                }
+                
+                // 作成日時
+                Text(formatDate(palette.createdAt))
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+            .padding(16)
+            .cardStyle(backgroundColor: Color(.secondarySystemBackground))
+        }
+        .buttonStyle(PlainButtonStyle())
+        .bounceOnTap()
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd HH:mm"
+        return formatter.string(from: date)
+    }
+}
+
+// MARK: - Preview
+#Preview {
+    ScrollView {
+        VStack(spacing: 16) {
+            // クイックアクションカード
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ], spacing: 16) {
+                QuickActionCard.photoExtraction { }
+                QuickActionCard.camera { }
+                QuickActionCard.gallery { }
+                QuickActionCard.randomPalette { }
+            }
+            
+            // 最近のパレットカード
+            VStack(alignment: .leading, spacing: 12) {
+                Text("最近のパレット")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                ForEach(ColorPalette.samplePalettes) { palette in
+                    RecentPaletteCard(palette: palette) { }
+                }
+            }
+        }
+        .padding()
+    }
+}
