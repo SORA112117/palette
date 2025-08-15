@@ -37,13 +37,10 @@ struct HomeView: View {
             matching: .images,
             photoLibrary: .shared()
         )
-        .sheet(isPresented: $viewModel.showingColorExtraction) {
-            if let image = viewModel.selectedImage {
-                ColorExtractionView(sourceImage: image)
+        .onChange(of: viewModel.selectedImage) { newImage in
+            if let image = newImage {
+                NavigationRouter.shared.presentColorExtraction(image: image)
             }
-        }
-        .sheet(isPresented: $viewModel.showingGallery) {
-            GalleryView()
         }
         .sheet(isPresented: $showingAbout) {
             AboutView()
@@ -296,65 +293,7 @@ struct AboutView: View {
     }
 }
 
-// MARK: - Color Extraction View (Placeholder)
-struct ColorExtractionView: View {
-    let sourceImage: UIImage
-    @Environment(\.dismiss) private var dismiss
-    
-    var body: some View {
-        NavigationView {
-            VStack {
-                Text("色抽出画面")
-                    .font(.title)
-                
-                Image(uiImage: sourceImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(maxHeight: 300)
-                    .cornerRadius(12)
-                
-                Text("この画面で色抽出処理を行います")
-                    .font(.body)
-                    .padding()
-                
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("色を抽出")
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("閉じる") {
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Gallery View (Placeholder)
-struct GalleryView: View {
-    @Environment(\.dismiss) private var dismiss
-    
-    var body: some View {
-        NavigationView {
-            Text("ギャラリー画面")
-                .font(.title)
-                .navigationTitle("ギャラリー")
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationBarBackButtonHidden(true)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("閉じる") {
-                            dismiss()
-                        }
-                    }
-                }
-        }
-    }
-}
+// プレースホルダービューを削除（実装済みのビューを使用）
 
 // MARK: - Preview
 #Preview {

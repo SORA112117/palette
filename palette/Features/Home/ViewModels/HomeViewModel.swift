@@ -20,8 +20,7 @@ class HomeViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     @Published var showingImagePicker = false
-    @Published var showingColorExtraction = false
-    @Published var showingGallery = false
+    // NavigationRouterを使用するためこれらは不要
     @Published var selectedImage: UIImage?
     
     // MARK: - Services
@@ -57,12 +56,12 @@ class HomeViewModel: ObservableObject {
     
     /// ギャラリーを表示
     func showGallery() {
-        showingGallery = true
+        NavigationRouter.shared.navigateToGallery()
     }
     
-    /// パレットから色抽出画面へ遷移
+    /// パレットから詳細画面へ遷移
     func extractColorsFromPalette(_ palette: ColorPalette) {
-        // TODO: パレット詳細画面への遷移
+        NavigationRouter.shared.navigateToPaletteDetail(palette, from: .home)
     }
     
     /// エラーメッセージをクリア
@@ -96,7 +95,7 @@ class HomeViewModel: ObservableObject {
             }
             
             selectedImage = image
-            showingColorExtraction = true
+            // selectedImageの変更はHomeViewのonChange内で検知されてNavigationRouterが呼ばれる
             
         } catch {
             errorMessage = error.localizedDescription
