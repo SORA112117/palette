@@ -137,7 +137,7 @@ struct GradientBackground: View {
     private var animatedColors: [Color] {
         if animated {
             return colors.map { color in
-                color.opacity(0.8 + sin(animationOffset * .pi / 180) * 0.2)
+                color.opacity(0.8 + sin(animationOffset * Double.pi / 180.0) * 0.2)
             }
         }
         return colors

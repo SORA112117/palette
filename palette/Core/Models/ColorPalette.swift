@@ -272,7 +272,7 @@ extension ColorPalette {
                 ExtractedColor(
                     hexCode: "#34495E",
                     rgb: RGBColor(red: 52, green: 73, blue: 94),
-                    hsl: HSLColor(hue: 210, 29, 29),
+                    hsl: HSLColor(hue: 210, saturation: 29, lightness: 29),
                     percentage: 32.1,
                     name: "Wet Asphalt"
                 )
