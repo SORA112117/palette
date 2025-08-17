@@ -30,24 +30,22 @@ struct HomeView: View {
     
     // MARK: - Body
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                // ヘッダー
-                headerSection
-                
-                // メインコンテンツ
-                ScrollView(.vertical, showsIndicators: false) {
-                    VStack(spacing: 32) {
-                        welcomeSection
-                        mainOptionsSection
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 100) // タブバー分の余白
+        VStack(spacing: 0) {
+            // ヘッダー
+            headerSection
+            
+            // メインコンテンツ
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 24) {
+                    mainOptionsSection
                 }
-                .background(Color.backgroundPrimary)
+                .padding(.horizontal, 24)
+                .padding(.top, 20)
+                .padding(.bottom, 100) // タブバー分の余白
             }
-            .navigationBarHidden(true)
+            .background(Color.backgroundPrimary)
         }
+        .navigationBarHidden(true)
         .photosPicker(
             isPresented: $viewModel.showingImagePicker,
             selection: $viewModel.selectedPhotoItem,
@@ -72,13 +70,9 @@ struct HomeView: View {
     // MARK: - Header Section
     private var headerSection: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("推しパレ")
-                    .smartText(.header)
-                
-                Text("あなたの色を見つけよう")
-                    .smartText(.bodySecondary)
-            }
+            Text("ホーム")
+                .font(.system(size: 28, weight: .bold))
+                .foregroundColor(.textPrimary)
             
             Spacer()
             
@@ -90,88 +84,52 @@ struct HomeView: View {
             .bounceOnTap()
         }
         .padding(.horizontal, 24)
-        .padding(.top, 8)
+        .padding(.vertical, 16)
         .background(Color(.systemBackground).opacity(0.95))
     }
     
-    // MARK: - Welcome Section
-    private var welcomeSection: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "paintpalette.fill")
-                .font(.system(size: 64))
-                .foregroundColor(.iconPrimary)
-                .padding(.top, 20)
-            
-            VStack(spacing: 8) {
-                Text("何をしたいですか？")
-                    .smartText(.title)
-                
-                Text("下のオプションから選んでください")
-                    .smartText(.bodySecondary)
-                    .multilineTextAlignment(.center)
-            }
-        }
-        .padding(.vertical, 20)
-    }
     
     // MARK: - Main Options Section
     private var mainOptionsSection: some View {
-        VStack(spacing: 24) {
-            // ヘッダー説明
-            VStack(spacing: 16) {
-                Image(systemName: "paintpalette.fill")
-                    .font(.system(size: 48))
-                    .foregroundColor(.iconPrimary)
-                
-                VStack(spacing: 8) {
-                    Text("パレットの作成方法を選択")
-                        .smartText(.title)
-                    
-                    Text("どの方法でパレットを作成しますか？")
-                        .smartText(.bodySecondary)
-                        .multilineTextAlignment(.center)
+        VStack(spacing: 16) {
+            // 手動ピッカーで作成
+            MainOptionCard(
+                title: "手動ピッカーで作成",
+                subtitle: "画像内の好きな場所から色を選択",
+                icon: "eyedropper.halffull",
+                iconColor: Color.smartBlack,
+                action: {
+                    print("手動ピッカーボタンがタップされました")
+                    diContainer.navigationRouter.homePath.append(NavigationDestination.manualColorPicker)
+                    print("NavigationDestination.manualColorPicker をパスに追加しました")
                 }
-            }
-            .padding(.top, 20)
+            )
             
-            // 作成オプション
-            VStack(spacing: 16) {
-                // 手動ピッカーで作成
-                MainOptionCard(
-                    title: "手動ピッカーで作成",
-                    subtitle: "画像内の好きな場所から色を選択",
-                    icon: "eyedropper.halffull",
-                    iconColor: Color.smartBlack,
-                    action: {
-                        diContainer.navigationRouter.homePath.append(NavigationDestination.manualColorPicker)
-                    }
-                )
-                
-                // 自動抽出で作成
-                MainOptionCard(
-                    title: "自動抽出で作成",
-                    subtitle: "色数を指定して自動で抽出",
-                    icon: "wand.and.stars",
-                    iconColor: Color.smartDarkGray,
-                    action: {
-                        diContainer.navigationRouter.homePath.append(NavigationDestination.automaticExtraction)
-                    }
-                )
-                
-                // 手動パレット作成
-                MainOptionCard(
-                    title: "手動で作成",
-                    subtitle: "カラーピッカーで自由に選択",
-                    icon: "paintpalette.fill",
-                    iconColor: Color.smartMediumGray,
-                    action: {
-                        diContainer.navigationRouter.homePath.append(NavigationDestination.manualPaletteCreation)
-                    }
-                )
-            }
+            // 自動抽出で作成
+            MainOptionCard(
+                title: "自動抽出で作成",
+                subtitle: "色数を指定して自動で抽出",
+                icon: "wand.and.stars",
+                iconColor: Color.smartDarkGray,
+                action: {
+                    print("自動抽出ボタンがタップされました")
+                    diContainer.navigationRouter.homePath.append(NavigationDestination.automaticExtraction)
+                }
+            )
+            
+            // 手動パレット作成
+            MainOptionCard(
+                title: "手動で作成",
+                subtitle: "カラーピッカーで自由に選択",
+                icon: "paintpalette.fill",
+                iconColor: Color.smartMediumGray,
+                action: {
+                    print("手動パレット作成ボタンがタップされました")
+                    diContainer.navigationRouter.homePath.append(NavigationDestination.manualPaletteCreation)
+                }
+            )
         }
     }
-    
 }
 
 // MARK: - Main Option Card
