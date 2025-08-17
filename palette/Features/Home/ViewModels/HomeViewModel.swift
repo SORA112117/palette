@@ -23,12 +23,25 @@ class HomeViewModel: ObservableObject {
     // NavigationRouterを使用するためこれらは不要
     @Published var selectedImage: UIImage?
     
-    // MARK: - Services
-    private let colorExtractionService = ColorExtractionService()
+    // MARK: - Dependencies
+    private let storageService: any StorageServiceProtocol
+    private let navigationRouter: any NavigationRouterProtocol
+    private let hapticProvider: any HapticProviding
+    private let appConfiguration: any AppConfigurationProviding
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialization
-    init() {
+    init(
+        storageService: any StorageServiceProtocol,
+        navigationRouter: any NavigationRouterProtocol,
+        hapticProvider: any HapticProviding,
+        appConfiguration: any AppConfigurationProviding
+    ) {
+        self.storageService = storageService
+        self.navigationRouter = navigationRouter
+        self.hapticProvider = hapticProvider
+        self.appConfiguration = appConfiguration
+        
         loadRecentPalettes()
         setupPhotoItemObserver()
     }
@@ -37,14 +50,13 @@ class HomeViewModel: ObservableObject {
     
     /// 最近のパレットを読み込む
     func loadRecentPalettes() {
-        // TODO: CoreDataやUserDefaultsから実際のデータを読み込む
-        // 現在はサンプルデータを使用
-        recentPalettes = Array(ColorPalette.samplePalettes.prefix(3))
+        recentPalettes = Array(storageService.savedPalettes.prefix(3))
     }
     
     /// 写真ライブラリから画像を選択
     func selectPhotoFromLibrary() {
         showingImagePicker = true
+        hapticProvider.lightImpact()
     }
     
     /// カメラで撮影
@@ -52,16 +64,17 @@ class HomeViewModel: ObservableObject {
         // TODO: カメラ機能の実装
         // 現在は写真ライブラリを開く
         showingImagePicker = true
+        hapticProvider.lightImpact()
     }
     
     /// ギャラリーを表示
     func showGallery() {
-        NavigationRouter.shared.navigateToGallery()
+        navigationRouter.navigateToGallery()
     }
     
     /// パレットから詳細画面へ遷移
     func extractColorsFromPalette(_ palette: ColorPalette) {
-        NavigationRouter.shared.navigateToPaletteDetail(palette, from: .home)
+        navigationRouter.navigateToPaletteDetail(palette, from: .home)
     }
     
     /// エラーメッセージをクリア

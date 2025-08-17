@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - ナビゲーションルーター
 @MainActor
-class NavigationRouter: ObservableObject {
+class NavigationRouter: NavigationRouterProtocol, ObservableObject {
     
     // MARK: - Navigation Paths
     @Published var homePath = NavigationPath()
@@ -138,10 +138,64 @@ enum AppTab: String, CaseIterable {
 enum NavigationDestination: Hashable {
     case paletteDetail(ColorPalette)
     case taggedPalettes(String)
+    case paletteCreationOptions
+    case paletteManagement
+    case moreOptions
+    case manualColorPicker
+    case automaticExtraction
+    case manualPaletteCreation
     case about
     case privacyPolicy
     case terms
     case licenses
+    
+    static func == (lhs: NavigationDestination, rhs: NavigationDestination) -> Bool {
+        switch (lhs, rhs) {
+        case (.paletteDetail(let lhsPalette), .paletteDetail(let rhsPalette)):
+            return lhsPalette.id == rhsPalette.id
+        case (.taggedPalettes(let lhsTag), .taggedPalettes(let rhsTag)):
+            return lhsTag == rhsTag
+        case (.paletteCreationOptions, .paletteCreationOptions), (.paletteManagement, .paletteManagement), (.moreOptions, .moreOptions):
+            return true
+        case (.manualColorPicker, .manualColorPicker), (.automaticExtraction, .automaticExtraction), (.manualPaletteCreation, .manualPaletteCreation):
+            return true
+        case (.about, .about), (.privacyPolicy, .privacyPolicy), (.terms, .terms), (.licenses, .licenses):
+            return true
+        default:
+            return false
+        }
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        switch self {
+        case .paletteDetail(let palette):
+            hasher.combine("paletteDetail")
+            hasher.combine(palette.id)
+        case .taggedPalettes(let tag):
+            hasher.combine("taggedPalettes")
+            hasher.combine(tag)
+        case .about:
+            hasher.combine("about")
+        case .privacyPolicy:
+            hasher.combine("privacyPolicy")
+        case .terms:
+            hasher.combine("terms")
+        case .paletteCreationOptions:
+            hasher.combine("paletteCreationOptions")
+        case .paletteManagement:
+            hasher.combine("paletteManagement")
+        case .moreOptions:
+            hasher.combine("moreOptions")
+        case .manualColorPicker:
+            hasher.combine("manualColorPicker")
+        case .automaticExtraction:
+            hasher.combine("automaticExtraction")
+        case .manualPaletteCreation:
+            hasher.combine("manualPaletteCreation")
+        case .licenses:
+            hasher.combine("licenses")
+        }
+    }
 }
 
 enum SheetDestination: Identifiable {

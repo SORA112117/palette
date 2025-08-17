@@ -175,10 +175,6 @@ struct ColorExtractionView: View {
                                 viewModel.removeColor(color)
                             }
                         )
-                        .draggable(color) {
-                            ColorCircle(color: color, size: 60)
-                                .opacity(0.8)
-                        }
                     }
                 }
                 .padding(.vertical, 8)
@@ -212,7 +208,7 @@ struct ColorExtractionView: View {
                 }
             }
             .pickerStyle(SegmentedPickerStyle())
-            .onChange(of: viewModel.selectedColorCount) { newValue in
+            .onChange(of: viewModel.selectedColorCount) { _, newValue in
                 viewModel.changeColorCount(newValue)
             }
         }

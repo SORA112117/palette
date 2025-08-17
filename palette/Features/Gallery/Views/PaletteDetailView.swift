@@ -84,7 +84,7 @@ struct PaletteDetailView: View {
     /// ヘッダーセクション
     private var headerSection: some View {
         HStack {
-            Button(action: { dismiss() }) {
+            Button("閉じる") {
                 Image(systemName: "xmark.circle.fill")
                     .font(.title2)
                     .foregroundColor(.secondary)
@@ -212,8 +212,8 @@ struct PaletteDetailView: View {
                                     .font(.caption)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 6)
-                                    .background(Color.primaryPink.opacity(0.1))
-                                    .foregroundColor(.primaryPink)
+                                    .background(Color(red: 1.0, green: 0.4, blue: 0.6).opacity(0.1))
+                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.6))
                                     .cornerRadius(16)
                             }
                         }
@@ -227,33 +227,33 @@ struct PaletteDetailView: View {
     private var actionButtonsSection: some View {
         VStack(spacing: 12) {
             HStack(spacing: 12) {
-                ActionButton(
+                PaletteActionButton(
                     title: "壁紙作成",
                     icon: "iphone",
-                    backgroundColor: .primaryPink,
+                    backgroundColor: Color(red: 1.0, green: 0.4, blue: 0.6),
                     action: { showingWallpaperCreator = true }
                 )
                 
-                ActionButton(
+                PaletteActionButton(
                     title: "共有",
                     icon: "square.and.arrow.up",
-                    backgroundColor: .primaryBlue,
+                    backgroundColor: Color.blue,
                     action: { showingShareSheet = true }
                 )
             }
             
             HStack(spacing: 12) {
-                ActionButton(
+                PaletteActionButton(
                     title: "編集",
                     icon: "pencil",
-                    backgroundColor: .primaryGreen,
+                    backgroundColor: Color.green,
                     action: { showingEditSheet = true }
                 )
                 
-                ActionButton(
+                PaletteActionButton(
                     title: favoriteButtonTitle,
                     icon: favoriteButtonIcon,
-                    backgroundColor: .red,
+                    backgroundColor: Color.red,
                     action: toggleFavorite
                 )
             }
@@ -332,8 +332,8 @@ struct PaletteDetailView: View {
         
         Divider()
         
-        Button(action: { showingDeleteAlert = true }, role: .destructive) {
-            Label("削除", systemImage: "trash")
+        Button("削除", role: .destructive) {
+            showingDeleteAlert = true
         }
     }
     
@@ -451,7 +451,7 @@ struct InfoRow: View {
     }
 }
 
-struct ActionButton: View {
+struct PaletteActionButton: View {
     let title: String
     let icon: String
     let backgroundColor: Color

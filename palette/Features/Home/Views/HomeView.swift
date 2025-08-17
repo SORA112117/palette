@@ -11,24 +11,41 @@ import PhotosUI
 // MARK: - ホーム画面
 struct HomeView: View {
     
+    // MARK: - Dependencies
+    @Environment(\.diContainer) private var diContainer
+    
     // MARK: - State
-    @StateObject private var viewModel = HomeViewModel()
+    @StateObject private var viewModel: HomeViewModel
     @State private var showingAbout = false
+    
+    // MARK: - Initialization
+    init(viewModel: HomeViewModel? = nil) {
+        if let viewModel = viewModel {
+            self._viewModel = StateObject(wrappedValue: viewModel)
+        } else {
+            // フォールバック: DIContainerから作成
+            self._viewModel = StateObject(wrappedValue: DIContainer.shared.makeHomeViewModel())
+        }
+    }
     
     // MARK: - Body
     var body: some View {
         NavigationView {
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 24) {
-                    headerSection
-                    quickActionsSection
-                    recentPalettesSection
-                    featuredSection
+            VStack(spacing: 0) {
+                // ヘッダー
+                headerSection
+                
+                // メインコンテンツ
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: 32) {
+                        welcomeSection
+                        mainOptionsSection
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 100) // タブバー分の余白
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 100) // タブバー分の余白
+                .background(Color.backgroundPrimary)
             }
-            .background(backgroundGradient)
             .navigationBarHidden(true)
         }
         .photosPicker(
@@ -37,9 +54,9 @@ struct HomeView: View {
             matching: .images,
             photoLibrary: .shared()
         )
-        .onChange(of: viewModel.selectedImage) { newImage in
+        .onChange(of: viewModel.selectedImage) { _, newImage in
             if let image = newImage {
-                NavigationRouter.shared.presentColorExtraction(image: image)
+                diContainer.navigationRouter.presentColorExtraction(image: image)
             }
         }
         .sheet(isPresented: $showingAbout) {
@@ -54,201 +71,108 @@ struct HomeView: View {
     
     // MARK: - Header Section
     private var headerSection: some View {
-        VStack(spacing: 16) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("推しパレ")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
-                    
-                    Text("あなたの色を見つけよう")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("推しパレ")
+                    .smartText(.header)
                 
-                Spacer()
-                
-                Button(action: { showingAbout = true }) {
-                    Image(systemName: "info.circle")
-                        .font(.title2)
-                        .foregroundColor(.secondary)
-                }
-                .bounceOnTap()
-            }
-            .padding(.top, 8)
-            
-            // 今日のインスピレーション
-            inspirationCard
-        }
-    }
-    
-    // MARK: - Inspiration Card
-    private var inspirationCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: "sparkles")
-                    .foregroundColor(.yellow)
-                Text("今日のインスピレーション")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                Spacer()
+                Text("あなたの色を見つけよう")
+                    .smartText(.bodySecondary)
             }
             
-            HStack(spacing: 8) {
-                ForEach(Color.sunsetGradient.indices, id: \.self) { index in
-                    Circle()
-                        .fill(Color.sunsetGradient[index])
-                        .frame(width: 30, height: 30)
-                        .overlay(
-                            Circle()
-                                .stroke(Color.white, lineWidth: 2)
-                                .shadow(color: .black.opacity(0.1), radius: 2)
-                        )
-                }
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("サンセットグラデーション")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                    Text("温かく優しい色合い")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                
-                Spacer()
-            }
-        }
-        .padding(20)
-        .glassMorphism()
-    }
-    
-    // MARK: - Quick Actions Section
-    private var quickActionsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("クイックアクション")
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundColor(.primary)
+            Spacer()
             
-            LazyVGrid(columns: [
-                GridItem(.flexible()),
-                GridItem(.flexible())
-            ], spacing: 16) {
-                QuickActionCard.photoExtraction {
-                    viewModel.selectPhotoFromLibrary()
-                }
-                
-                QuickActionCard.camera {
-                    viewModel.takePhoto()
-                }
-                
-                QuickActionCard.gallery {
-                    viewModel.showGallery()
-                }
-                
-                QuickActionCard.wallpaper {
-                    // TODO: 壁紙作成画面への遷移
-                }
-            }
-        }
-    }
-    
-    // MARK: - Recent Palettes Section
-    private var recentPalettesSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Text("最近のパレット")
+            Button(action: { showingAbout = true }) {
+                Image(systemName: "info.circle")
                     .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
-                
-                Spacer()
-                
-                Button("すべて表示") {
-                    viewModel.showGallery()
-                }
-                .font(.subheadline)
-                .foregroundColor(.blue)
-            }
-            
-            if viewModel.recentPalettes.isEmpty {
-                emptyRecentPalettesView
-            } else {
-                ForEach(viewModel.recentPalettes) { palette in
-                    RecentPaletteCard(palette: palette) {
-                        viewModel.extractColorsFromPalette(palette)
-                    }
-                }
-            }
-        }
-    }
-    
-    // MARK: - Empty Recent Palettes View
-    private var emptyRecentPalettesView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "photo.on.rectangle.angled")
-                .font(.system(size: 48))
-                .foregroundColor(.secondary)
-            
-            VStack(spacing: 8) {
-                Text("まだパレットがありません")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                
-                Text("写真から色を抽出して、最初のパレットを作成しましょう")
-                    .font(.subheadline)
                     .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
             }
-            
-            Button("写真を選択") {
-                viewModel.selectPhotoFromLibrary()
-            }
-            .font(.headline)
-            .foregroundColor(.white)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 12)
-            .background(Color.primaryPink)
-            .cornerRadius(25)
             .bounceOnTap()
         }
-        .padding(32)
-        .cardStyle()
+        .padding(.horizontal, 24)
+        .padding(.top, 8)
+        .background(Color(.systemBackground).opacity(0.95))
     }
     
-    // MARK: - Featured Section
-    private var featuredSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("おすすめ機能")
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundColor(.primary)
+    // MARK: - Welcome Section
+    private var welcomeSection: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "paintpalette.fill")
+                .font(.system(size: 64))
+                .foregroundColor(.iconPrimary)
+                .padding(.top, 20)
             
-            VStack(spacing: 12) {
-                QuickActionCard.trending {
-                    // TODO: トレンド画面への遷移
-                }
+            VStack(spacing: 8) {
+                Text("何をしたいですか？")
+                    .smartText(.title)
                 
-                QuickActionCard.randomPalette {
-                    // TODO: ランダムパレット生成
-                }
+                Text("下のオプションから選んでください")
+                    .smartText(.bodySecondary)
+                    .multilineTextAlignment(.center)
             }
+        }
+        .padding(.vertical, 20)
+    }
+    
+    // MARK: - Main Options Section
+    private var mainOptionsSection: some View {
+        VStack(spacing: 24) {
+            // パレット作成
+            MainOptionCard(
+                title: "パレットを作成",
+                subtitle: "写真から色を抽出・手動で作成",
+                icon: "plus.circle.fill",
+                iconColor: .smartBlack,
+                action: {
+                    NavigationRouter.shared.homePath.append(NavigationDestination.paletteCreationOptions)
+                }
+            )
         }
     }
     
-    // MARK: - Background Gradient
-    private var backgroundGradient: some View {
-        LinearGradient(
-            colors: [
-                Color(.systemBackground),
-                Color(.systemBackground).opacity(0.8),
-                Color.primaryTurquoise.opacity(0.1)
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-        .ignoresSafeArea()
+}
+
+// MARK: - Main Option Card
+struct MainOptionCard: View {
+    let title: String
+    let subtitle: String
+    let icon: String
+    let iconColor: Color
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 20) {
+                // アイコン
+                Image(systemName: icon)
+                    .font(.system(size: 40, weight: .medium))
+                    .foregroundColor(iconColor)
+                    .frame(width: 60, height: 60)
+                    .background(iconColor.opacity(0.1))
+                    .clipShape(Circle())
+                
+                // テキスト
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .smartText(.subtitle)
+                    
+                    Text(subtitle)
+                        .smartText(.bodySecondary)
+                        .multilineTextAlignment(.leading)
+                }
+                
+                Spacer()
+                
+                // 矢印
+                Image(systemName: "chevron.right")
+                    .font(.title3)
+                    .foregroundColor(.iconSecondary)
+            }
+            .padding(SmartTheme.spacingL)
+            .smartCard(elevation: .medium)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .bounceOnTap()
     }
 }
 
@@ -261,7 +185,7 @@ struct AboutView: View {
             VStack(spacing: 20) {
                 Image(systemName: "paintpalette")
                     .font(.system(size: 80))
-                    .foregroundColor(.primaryPink)
+                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.6))
                 
                 Text("推しパレ")
                     .font(.title)
@@ -292,8 +216,6 @@ struct AboutView: View {
         }
     }
 }
-
-// プレースホルダービューを削除（実装済みのビューを使用）
 
 // MARK: - Preview
 #Preview {

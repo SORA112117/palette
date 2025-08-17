@@ -8,13 +8,24 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var router = NavigationRouter.shared
+    @StateObject private var diContainer = DIContainer.shared
+    
+    private var router: any NavigationRouterProtocol {
+        diContainer.navigationRouter
+    }
     
     var body: some View {
-        TabView(selection: $router.selectedTab) {
+        TabView(selection: Binding(
+            get: { router.selectedTab },
+            set: { router.selectedTab = $0 }
+        )) {
             // ホームタブ
-            NavigationStack(path: $router.homePath) {
+            NavigationStack(path: Binding(
+                get: { router.homePath },
+                set: { router.homePath = $0 }
+            )) {
                 HomeView()
+                    .withDependencies(diContainer)
                     .navigationDestination(for: NavigationDestination.self) { destination in
                         destinationView(destination)
                     }
@@ -26,8 +37,12 @@ struct ContentView: View {
             .tag(AppTab.home)
             
             // ギャラリータブ
-            NavigationStack(path: $router.galleryPath) {
+            NavigationStack(path: Binding(
+                get: { router.galleryPath },
+                set: { router.galleryPath = $0 }
+            )) {
                 GalleryView()
+                    .withDependencies(diContainer)
                     .navigationDestination(for: NavigationDestination.self) { destination in
                         destinationView(destination)
                     }
@@ -39,8 +54,12 @@ struct ContentView: View {
             .tag(AppTab.gallery)
             
             // 設定タブ
-            NavigationStack(path: $router.settingsPath) {
+            NavigationStack(path: Binding(
+                get: { router.settingsPath },
+                set: { router.settingsPath = $0 }
+            )) {
                 SettingsView()
+                    .withDependencies(diContainer)
                     .navigationDestination(for: NavigationDestination.self) { destination in
                         destinationView(destination)
                     }
@@ -51,20 +70,37 @@ struct ContentView: View {
             }
             .tag(AppTab.settings)
         }
-        .tint(.primaryPink)
-        .sheet(item: $router.presentedSheet) { sheet in
+        .tint(Color(red: 1.0, green: 0.4, blue: 0.6))
+        .sheet(item: Binding(
+            get: { router.presentedSheet },
+            set: { router.presentedSheet = $0 }
+        )) { sheet in
             sheetView(sheet)
         }
-        .fullScreenCover(item: $router.presentedFullScreenCover) { cover in
+        .fullScreenCover(item: Binding(
+            get: { router.presentedFullScreenCover },
+            set: { router.presentedFullScreenCover = $0 }
+        )) { cover in
             fullScreenCoverView(cover)
         }
-        .alert(item: $router.alertItem) { alertItem in
-            Alert(
-                title: Text(alertItem.title),
-                message: alertItem.message.map(Text.init),
-                primaryButton: alertItem.primaryButton,
-                secondaryButton: alertItem.secondaryButton
-            )
+        .alert(item: Binding(
+            get: { router.alertItem },
+            set: { router.alertItem = $0 }
+        )) { alertItem in
+            if let secondaryButton = alertItem.secondaryButton {
+                Alert(
+                    title: Text(alertItem.title),
+                    message: alertItem.message != nil ? Text(alertItem.message!) : nil,
+                    primaryButton: alertItem.primaryButton,
+                    secondaryButton: secondaryButton
+                )
+            } else {
+                Alert(
+                    title: Text(alertItem.title),
+                    message: alertItem.message != nil ? Text(alertItem.message!) : nil,
+                    dismissButton: alertItem.primaryButton
+                )
+            }
         }
     }
     
@@ -76,13 +112,34 @@ struct ContentView: View {
         case .paletteDetail(let palette):
             PaletteDetailView(palette: palette)
         case .taggedPalettes(let tag):
-            TaggedPalettesView(tag: tag)
+            // TODO: TaggedPalettesViewの実装
+            VStack {
+                Text("タグ「\(tag)」のパレット")
+                    .font(.title2)
+                    .padding()
+                Text("タグ別パレット表示（開発中）")
+                    .foregroundColor(.secondary)
+            }
+            .navigationTitle("タグ: \(tag)")
+            .navigationBarTitleDisplayMode(.inline)
+        case .paletteCreationOptions:
+            PaletteCreationOptionsView()
+        case .paletteManagement:
+            PaletteManagementView()
+        case .moreOptions:
+            MoreOptionsView()
+        case .manualColorPicker:
+            ManualColorPickerView()
+        case .automaticExtraction:
+            AutomaticExtractionView()
+        case .manualPaletteCreation:
+            ManualPaletteCreationView()
         case .about:
-            AboutView()
+            AboutAppView()
         case .privacyPolicy:
             PrivacyPolicyView()
         case .terms:
-            TermsView()
+            TermsOfServiceView()
         case .licenses:
             LicensesView()
         }
@@ -94,21 +151,22 @@ struct ContentView: View {
     private func sheetView(_ sheet: SheetDestination) -> some View {
         switch sheet {
         case .paletteEditor(let palette):
-            PaletteEditSheet(palette: palette) { updatedPalette in
-                Task {
-                    try? await StorageService.shared.savePalette(updatedPalette)
-                }
-            }
-        case .colorPicker(let colorBinding):
-            ColorPickerSheet { color in
-                colorBinding.wrappedValue = color
-            }
-        case .tagEditor(let tags):
-            TagEditorSheet(tags: tags) { _ in }
+            // TODO: PaletteEditSheetの実装
+            PaletteDetailView(palette: palette)
+        case .colorPicker(_):
+            // TODO: ColorPickerSheetの実装
+            Text("カラーピッカー（開発中）")
+                .padding()
+        case .tagEditor(_):
+            // TODO: TagEditorSheetの実装
+            Text("タグエディター（開発中）")
+                .padding()
         case .share(let items):
             ShareSheet(items: items)
         case .imagePicker:
-            ImagePickerView()
+            // TODO: ImagePickerViewの実装
+            Text("画像選択（開発中）")
+                .padding()
         }
     }
     
@@ -120,26 +178,58 @@ struct ContentView: View {
         case .colorExtraction(let image):
             ColorExtractionView(sourceImage: image)
         case .wallpaperCreator(let palette):
-            WallpaperCreatorView(palette: palette)
+            // TODO: WallpaperCreatorViewの実装
+            NavigationView {
+                VStack {
+                    Text("壁紙作成（開発中）")
+                        .font(.title2)
+                        .padding()
+                    
+                    Button("閉じる") {
+                        diContainer.navigationRouter.dismissAllModals()
+                    }
+                    .padding()
+                }
+                .navigationTitle("壁紙作成")
+                .navigationBarTitleDisplayMode(.inline)
+            }
         case .onboarding:
-            OnboardingView()
+            // TODO: OnboardingViewの実装
+            NavigationView {
+                VStack {
+                    Text("オンボーディング（開発中）")
+                        .font(.title2)
+                        .padding()
+                    
+                    Button("閉じる") {
+                        diContainer.navigationRouter.dismissAllModals()
+                    }
+                    .padding()
+                }
+                .navigationTitle("ようこそ")
+                .navigationBarTitleDisplayMode(.inline)
+            }
         case .camera:
-            CameraView()
+            // TODO: CameraViewの実装
+            NavigationView {
+                VStack {
+                    Text("カメラ（開発中）")
+                        .font(.title2)
+                        .padding()
+                    
+                    Button("閉じる") {
+                        diContainer.navigationRouter.dismissAllModals()
+                    }
+                    .padding()
+                }
+                .navigationTitle("カメラ")
+                .navigationBarTitleDisplayMode(.inline)
+            }
         }
     }
 }
 
 // MARK: - Placeholder Views
-
-struct SettingsView: View {
-    var body: some View {
-        VStack {
-            Text("設定画面")
-                .font(.title)
-                .navigationTitle("設定")
-        }
-    }
-}
 
 struct TaggedPalettesView: View {
     let tag: String
@@ -153,45 +243,7 @@ struct TaggedPalettesView: View {
     }
 }
 
-struct AboutView: View {
-    var body: some View {
-        VStack {
-            Text("アプリについて")
-                .font(.title2)
-                .navigationTitle("About")
-        }
-    }
-}
-
-struct PrivacyPolicyView: View {
-    var body: some View {
-        VStack {
-            Text("プライバシーポリシー")
-                .font(.title2)
-                .navigationTitle("プライバシーポリシー")
-        }
-    }
-}
-
-struct TermsView: View {
-    var body: some View {
-        VStack {
-            Text("利用規約")
-                .font(.title2)
-                .navigationTitle("利用規約")
-        }
-    }
-}
-
-struct LicensesView: View {
-    var body: some View {
-        VStack {
-            Text("ライセンス")
-                .font(.title2)
-                .navigationTitle("ライセンス")
-        }
-    }
-}
+// AboutView は HomeView.swift で定義されています
 
 struct ImagePickerView: View {
     @Environment(\.dismiss) private var dismiss
@@ -229,7 +281,7 @@ struct OnboardingView: View {
             .font(.headline)
             .foregroundColor(.white)
             .padding()
-            .background(Color.primaryPink)
+            .background(Color(red: 1.0, green: 0.4, blue: 0.6))
             .cornerRadius(12)
         }
     }

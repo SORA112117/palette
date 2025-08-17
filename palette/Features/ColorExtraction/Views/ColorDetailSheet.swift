@@ -112,13 +112,13 @@ struct ColorDetailSheet: View {
                 .font(.headline)
             
             HStack(spacing: 12) {
-                ActionButton(
+                ColorActionButton(
                     title: "コピー",
                     icon: "doc.on.doc",
                     action: { viewModel.copyColorToClipboard(color) }
                 )
                 
-                ActionButton(
+                ColorActionButton(
                     title: "削除",
                     icon: "trash",
                     action: {
@@ -127,7 +127,7 @@ struct ColorDetailSheet: View {
                     }
                 )
                 
-                ActionButton(
+                ColorActionButton(
                     title: "編集",
                     icon: "slider.horizontal.3",
                     action: { showingColorPicker = true }
@@ -216,7 +216,7 @@ struct ColorInfoRow: View {
     }
 }
 
-struct ActionButton: View {
+struct ColorActionButton: View {
     let title: String
     let icon: String
     let action: () -> Void
@@ -226,7 +226,7 @@ struct ActionButton: View {
             VStack(spacing: 8) {
                 Image(systemName: icon)
                     .font(.title2)
-                    .foregroundColor(.primaryPink)
+                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.6))
                 
                 Text(title)
                     .font(.caption)

@@ -11,7 +11,7 @@ import CoreData
 
 // MARK: - データ永続化サービス
 @MainActor
-class StorageService: ObservableObject {
+class StorageService: StorageServiceProtocol, ObservableObject {
     
     // MARK: - Singleton
     static let shared = StorageService()
@@ -305,6 +305,143 @@ class StorageService: ObservableObject {
             newestPalette: savedPalettes.first?.createdAt
         )
     }
+    
+    // MARK: - Cache and Data Management
+    
+    /// キャッシュサイズを取得
+    func getCacheSize() async -> Int {
+        return await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .background).async {
+                do {
+                    let resourceKeys: [URLResourceKey] = [.fileSizeKey]
+                    let documentsEnumerator = FileManager.default.enumerator(
+                        at: self.documentsDirectory,
+                        includingPropertiesForKeys: resourceKeys,
+                        options: [],
+                        errorHandler: { (url, error) -> Bool in
+                            print("Directory enumerator error: \(error)")
+                            return true
+                        }
+                    )
+                    
+                    var totalSize = 0
+                    if let enumerator = documentsEnumerator {
+                        for case let fileURL as URL in enumerator {
+                            guard let resourceValues = try? fileURL.resourceValues(forKeys: Set(resourceKeys)),
+                                  let fileSize = resourceValues.fileSize else {
+                                continue
+                            }
+                            totalSize += fileSize
+                        }
+                    }
+                    
+                    continuation.resume(returning: totalSize)
+                } catch {
+                    print("Cache size calculation error: \(error)")
+                    continuation.resume(returning: 0)
+                }
+            }
+        }
+    }
+    
+    /// キャッシュをクリア（画像ファイルのみ）
+    func clearCache() async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .background).async {
+                do {
+                    let imageFiles = try FileManager.default.contentsOfDirectory(
+                        at: self.imagesDirectory,
+                        includingPropertiesForKeys: nil,
+                        options: .skipsHiddenFiles
+                    )
+                    
+                    for fileURL in imageFiles {
+                        try FileManager.default.removeItem(at: fileURL)
+                    }
+                    
+                    // メモリ上のパレットから画像データを削除
+                    DispatchQueue.main.async {
+                        self.savedPalettes = self.savedPalettes.map { palette in
+                            ColorPalette(
+                                id: palette.id,
+                                createdAt: palette.createdAt,
+                                sourceImageData: nil,
+                                colors: palette.colors,
+                                title: palette.title,
+                                tags: palette.tags
+                            )
+                        }
+                        
+                        self.favoritesPalettes = self.favoritesPalettes.map { palette in
+                            ColorPalette(
+                                id: palette.id,
+                                createdAt: palette.createdAt,
+                                sourceImageData: nil,
+                                colors: palette.colors,
+                                title: palette.title,
+                                tags: palette.tags
+                            )
+                        }
+                        
+                        continuation.resume()
+                    }
+                } catch {
+                    print("Cache clear error: \(error)")
+                    DispatchQueue.main.async {
+                        continuation.resume()
+                    }
+                }
+            }
+        }
+    }
+    
+    /// すべてのデータを削除
+    func clearAllData() async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .background).async {
+                do {
+                    // パレットファイルを削除
+                    let paletteFiles = try FileManager.default.contentsOfDirectory(
+                        at: self.palettesDirectory,
+                        includingPropertiesForKeys: nil,
+                        options: .skipsHiddenFiles
+                    )
+                    
+                    for fileURL in paletteFiles {
+                        try FileManager.default.removeItem(at: fileURL)
+                    }
+                    
+                    // 画像ファイルを削除
+                    let imageFiles = try FileManager.default.contentsOfDirectory(
+                        at: self.imagesDirectory,
+                        includingPropertiesForKeys: nil,
+                        options: .skipsHiddenFiles
+                    )
+                    
+                    for fileURL in imageFiles {
+                        try FileManager.default.removeItem(at: fileURL)
+                    }
+                    
+                    // UserDefaultsをクリア
+                    let defaults = UserDefaults.standard
+                    defaults.removeObject(forKey: "favoritePaletteIDs")
+                    defaults.removeObject(forKey: UserDefaultsKeys.lastOpenedPaletteID)
+                    
+                    // メモリ上のデータをクリア
+                    DispatchQueue.main.async {
+                        self.savedPalettes.removeAll()
+                        self.favoritesPalettes.removeAll()
+                        continuation.resume()
+                    }
+                } catch {
+                    print("Clear all data error: \(error)")
+                    DispatchQueue.main.async {
+                        continuation.resume()
+                    }
+                }
+            }
+        }
+    }
 }
 
 // MARK: - Supporting Types
@@ -345,11 +482,22 @@ enum AppTheme: String, CaseIterable {
     }
 }
 
-enum PaletteFilter {
+enum PaletteFilter: Equatable {
     case all
     case favorites
     case recent
     case byTag(String)
+    
+    static func == (lhs: PaletteFilter, rhs: PaletteFilter) -> Bool {
+        switch (lhs, rhs) {
+        case (.all, .all), (.favorites, .favorites), (.recent, .recent):
+            return true
+        case (.byTag(let lhsTag), .byTag(let rhsTag)):
+            return lhsTag == rhsTag
+        default:
+            return false
+        }
+    }
 }
 
 struct PaletteStatistics {

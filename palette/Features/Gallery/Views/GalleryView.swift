@@ -293,7 +293,7 @@ struct GalleryView: View {
                 Label("選択", systemImage: "checkmark.circle")
             }
             
-            if let statistics = viewModel.statistics {
+            if viewModel.statistics != nil {
                 Button(action: { /* 統計表示 */ }) {
                     Label("統計情報", systemImage: "chart.bar")
                 }

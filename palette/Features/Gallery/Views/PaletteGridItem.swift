@@ -250,8 +250,8 @@ struct PaletteGridItem: View {
         
         Divider()
         
-        Button(action: onDelete, role: .destructive) {
-            Label("削除", systemImage: "trash")
+        Button("削除", role: .destructive) {
+            onDelete()
         }
     }
     

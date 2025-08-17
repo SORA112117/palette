@@ -11,7 +11,7 @@ import CoreImage
 import Accelerate
 
 // MARK: - 色抽出サービス
-class ColorExtractionService: ObservableObject {
+class ColorExtractionService: ColorExtractionProviding, ObservableObject {
     
     // MARK: - Properties
     private let context = CIContext()
