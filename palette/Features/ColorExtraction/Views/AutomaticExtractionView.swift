@@ -14,6 +14,7 @@ struct AutomaticExtractionView: View {
     // MARK: - State
     @StateObject private var viewModel = AutomaticExtractionViewModel()
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.diContainer) private var diContainer
     
     // MARK: - Body
     var body: some View {
@@ -76,10 +77,14 @@ struct AutomaticExtractionView: View {
         .alert("パレット作成完了", isPresented: $viewModel.showingCompletionAlert) {
             Button("ギャラリーで確認") {
                 NavigationRouter.shared.navigateToGallery()
-                dismiss()
+                // ギャラリーに移動するのでhomePathをクリア
+                diContainer.navigationRouter.homePath = NavigationPath()
             }
             Button("閉じる") {
-                dismiss()
+                // NavigationStackコンテキストでは、NavigationPathから最後の要素を削除
+                if !diContainer.navigationRouter.homePath.isEmpty {
+                    diContainer.navigationRouter.homePath.removeLast()
+                }
             }
         } message: {
             Text("選択した設定でパレットを作成しました")
@@ -94,7 +99,10 @@ struct AutomaticExtractionView: View {
     private var headerSection: some View {
         HStack {
             Button("キャンセル") {
-                dismiss()
+                // NavigationStackコンテキストでは、NavigationPathから最後の要素を削除
+                if !diContainer.navigationRouter.homePath.isEmpty {
+                    diContainer.navigationRouter.homePath.removeLast()
+                }
             }
             .smartText(.bodySecondary)
             
@@ -468,7 +476,8 @@ import Combine
 
 // MARK: - Preview
 #Preview {
-    NavigationView {
+    NavigationStack {
         AutomaticExtractionView()
+            .withDependencies(DIContainer.shared)
     }
 }

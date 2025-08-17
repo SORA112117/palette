@@ -13,6 +13,7 @@ struct ManualPaletteCreationView: View {
     // MARK: - State
     @StateObject private var viewModel = ManualPaletteCreationViewModel()
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.diContainer) private var diContainer
     
     // MARK: - Body
     var body: some View {
@@ -44,7 +45,10 @@ struct ManualPaletteCreationView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button("キャンセル") {
-                    dismiss()
+                    // NavigationStackコンテキストでは、NavigationPathから最後の要素を削除
+                    if !diContainer.navigationRouter.homePath.isEmpty {
+                        diContainer.navigationRouter.homePath.removeLast()
+                    }
                 }
                 .smartText(.body)
             }
@@ -66,7 +70,8 @@ struct ManualPaletteCreationView: View {
         .alert("保存完了", isPresented: $viewModel.showingSuccessAlert) {
             Button("ギャラリーで確認") {
                 NavigationRouter.shared.navigateToGallery()
-                dismiss()
+                // ギャラリーに移動するのでhomePathをクリア
+                diContainer.navigationRouter.homePath = NavigationPath()
             }
             Button("続けて作成") {
                 // 何もしない（アラートを閉じるだけ）
@@ -362,7 +367,8 @@ class ManualPaletteCreationViewModel: ObservableObject {
 
 // MARK: - Preview
 #Preview {
-    NavigationView {
+    NavigationStack {
         ManualPaletteCreationView()
+            .withDependencies(DIContainer.shared)
     }
 }

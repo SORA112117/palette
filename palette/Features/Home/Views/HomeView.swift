@@ -99,9 +99,7 @@ struct HomeView: View {
                 icon: "eyedropper.halffull",
                 iconColor: Color.smartBlack,
                 action: {
-                    print("手動ピッカーボタンがタップされました")
                     diContainer.navigationRouter.homePath.append(NavigationDestination.manualColorPicker)
-                    print("NavigationDestination.manualColorPicker をパスに追加しました")
                 }
             )
             
@@ -112,7 +110,6 @@ struct HomeView: View {
                 icon: "wand.and.stars",
                 iconColor: Color.smartDarkGray,
                 action: {
-                    print("自動抽出ボタンがタップされました")
                     diContainer.navigationRouter.homePath.append(NavigationDestination.automaticExtraction)
                 }
             )
@@ -124,7 +121,6 @@ struct HomeView: View {
                 icon: "paintpalette.fill",
                 iconColor: Color.smartMediumGray,
                 action: {
-                    print("手動パレット作成ボタンがタップされました")
                     diContainer.navigationRouter.homePath.append(NavigationDestination.manualPaletteCreation)
                 }
             )
