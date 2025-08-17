@@ -84,12 +84,15 @@ struct PaletteDetailView: View {
     /// ヘッダーセクション
     private var headerSection: some View {
         HStack {
-            Button("閉じる") {
+            Button(action: {
+                dismiss()
+            }) {
                 Image(systemName: "xmark.circle.fill")
                     .font(.title2)
                     .foregroundColor(.secondary)
                     .background(Circle().fill(.ultraThinMaterial))
             }
+            .bounceOnTap()
             
             Spacer()
             

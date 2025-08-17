@@ -117,16 +117,58 @@ struct HomeView: View {
     // MARK: - Main Options Section
     private var mainOptionsSection: some View {
         VStack(spacing: 24) {
-            // パレット作成
-            MainOptionCard(
-                title: "パレットを作成",
-                subtitle: "写真から色を抽出・手動で作成",
-                icon: "plus.circle.fill",
-                iconColor: .smartBlack,
-                action: {
-                    NavigationRouter.shared.homePath.append(NavigationDestination.paletteCreationOptions)
+            // ヘッダー説明
+            VStack(spacing: 16) {
+                Image(systemName: "paintpalette.fill")
+                    .font(.system(size: 48))
+                    .foregroundColor(.iconPrimary)
+                
+                VStack(spacing: 8) {
+                    Text("パレットの作成方法を選択")
+                        .smartText(.title)
+                    
+                    Text("どの方法でパレットを作成しますか？")
+                        .smartText(.bodySecondary)
+                        .multilineTextAlignment(.center)
                 }
-            )
+            }
+            .padding(.top, 20)
+            
+            // 作成オプション
+            VStack(spacing: 16) {
+                // 手動ピッカーで作成
+                MainOptionCard(
+                    title: "手動ピッカーで作成",
+                    subtitle: "画像内の好きな場所から色を選択",
+                    icon: "eyedropper.halffull",
+                    iconColor: Color.smartBlack,
+                    action: {
+                        diContainer.navigationRouter.homePath.append(NavigationDestination.manualColorPicker)
+                    }
+                )
+                
+                // 自動抽出で作成
+                MainOptionCard(
+                    title: "自動抽出で作成",
+                    subtitle: "色数を指定して自動で抽出",
+                    icon: "wand.and.stars",
+                    iconColor: Color.smartDarkGray,
+                    action: {
+                        diContainer.navigationRouter.homePath.append(NavigationDestination.automaticExtraction)
+                    }
+                )
+                
+                // 手動パレット作成
+                MainOptionCard(
+                    title: "手動で作成",
+                    subtitle: "カラーピッカーで自由に選択",
+                    icon: "paintpalette.fill",
+                    iconColor: Color.smartMediumGray,
+                    action: {
+                        diContainer.navigationRouter.homePath.append(NavigationDestination.manualPaletteCreation)
+                    }
+                )
+            }
         }
     }
     
@@ -141,7 +183,10 @@ struct MainOptionCard: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button(action: {
+            HapticManager.shared.lightImpact()
+            action()
+        }) {
             HStack(spacing: 20) {
                 // アイコン
                 Image(systemName: icon)
@@ -170,6 +215,7 @@ struct MainOptionCard: View {
             }
             .padding(SmartTheme.spacingL)
             .smartCard(elevation: .medium)
+            .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
         .bounceOnTap()
