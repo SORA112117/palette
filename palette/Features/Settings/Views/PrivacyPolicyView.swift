@@ -187,7 +187,7 @@ struct PrivacyPolicyView: View {
             HStack(spacing: 12) {
                 Image(systemName: "envelope.circle.fill")
                     .font(.system(size: 24))
-                    .foregroundColor(.smartBlack)
+                    .foregroundColor(.smartPink)
                 
                 Text("お問い合わせ")
                     .smartText(.subtitle)
@@ -208,7 +208,7 @@ struct PrivacyPolicyView: View {
                 
                 Text("お客様のプライバシーと個人情報の保護は私たちの最優先事項です。安心して本アプリをご利用ください。")
                     .smartText(.body)
-                    .foregroundColor(.smartBlack)
+                    .foregroundColor(.smartPink)
                     .padding(.top, 8)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -229,7 +229,7 @@ struct PrivacySection: View {
             HStack(spacing: 12) {
                 Image(systemName: icon)
                     .font(.system(size: 24))
-                    .foregroundColor(.smartBlack)
+                    .foregroundColor(.smartPink)
                 
                 Text(title)
                     .smartText(.subtitle)

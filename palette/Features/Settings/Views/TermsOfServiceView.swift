@@ -209,7 +209,7 @@ struct TermsOfServiceView: View {
             HStack(spacing: 12) {
                 Image(systemName: "envelope.circle.fill")
                     .font(.system(size: 24))
-                    .foregroundColor(.smartBlack)
+                    .foregroundColor(.smartPink)
                 
                 Text("お問い合わせ")
                     .smartText(.subtitle)
@@ -230,7 +230,7 @@ struct TermsOfServiceView: View {
                 
                 Text("快適に本アプリをご利用いただくため、本規約をご理解いただき、適切にご利用ください。")
                     .smartText(.body)
-                    .foregroundColor(.smartBlack)
+                    .foregroundColor(.smartPink)
                     .padding(.top, 8)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -251,7 +251,7 @@ struct TermsSection: View {
             HStack(spacing: 12) {
                 Image(systemName: icon)
                     .font(.system(size: 24))
-                    .foregroundColor(.smartBlack)
+                    .foregroundColor(.smartPink)
                 
                 Text(title)
                     .smartText(.subtitle)

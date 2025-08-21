@@ -224,7 +224,7 @@ struct HelpCard: View {
                 HStack(spacing: 12) {
                     Image(systemName: icon)
                         .font(.system(size: 20))
-                        .foregroundColor(.smartBlack)
+                        .foregroundColor(.smartPink)
                         .frame(width: 32, height: 32)
                     
                     VStack(alignment: .leading, spacing: 2) {

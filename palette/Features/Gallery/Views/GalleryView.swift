@@ -76,21 +76,21 @@ struct GalleryView: View {
             HStack {
                 HStack {
                     Image(systemName: "magnifyingglass")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.smartGrayPink)
                     
                     TextField("パレットを検索", text: $viewModel.searchText)
                         .textFieldStyle(PlainTextFieldStyle())
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(Color(.systemGray6))
+                .background(Color.smartOffWhite)
                 .cornerRadius(10)
                 
                 if !viewModel.searchText.isEmpty {
                     Button("キャンセル") {
                         viewModel.searchText = ""
                     }
-                    .foregroundColor(.primaryPink)
+                    .foregroundColor(.smartPink)
                 }
             }
             
@@ -122,8 +122,8 @@ struct GalleryView: View {
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(Color.primaryPink.opacity(0.1))
-                        .foregroundColor(.primaryPink)
+                        .background(Color.smartPink.opacity(0.1))
+                        .foregroundColor(.smartPink)
                         .cornerRadius(16)
                     }
                     
@@ -145,7 +145,7 @@ struct GalleryView: View {
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(Color.gray.opacity(0.1))
+                        .background(Color.smartLightGray.opacity(0.3))
                         .foregroundColor(.primary)
                         .cornerRadius(16)
                     }
@@ -163,8 +163,8 @@ struct GalleryView: View {
                             }
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(Color.blue.opacity(0.1))
-                            .foregroundColor(.blue)
+                            .background(Color.smartPalePink)
+                            .foregroundColor(.smartPink)
                             .cornerRadius(16)
                             .font(.caption)
                         }
@@ -233,7 +233,7 @@ struct GalleryView: View {
         VStack(spacing: 24) {
             Image(systemName: "rectangle.stack")
                 .font(.system(size: 64))
-                .foregroundColor(.secondary)
+                .foregroundColor(.smartGrayPink)
             
             VStack(spacing: 12) {
                 Text(emptyStateTitle)
@@ -257,7 +257,7 @@ struct GalleryView: View {
                         .foregroundColor(.white)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)
-                        .background(Color.primaryPink)
+                        .background(Color.smartPink)
                         .cornerRadius(25)
                 }
                 .bounceOnTap()
@@ -272,7 +272,7 @@ struct GalleryView: View {
         LinearGradient(
             colors: [
                 Color(.systemBackground),
-                Color.primaryGreen.opacity(0.05)
+                Color.smartPalePink.opacity(0.3)
             ],
             startPoint: .top,
             endPoint: .bottom
@@ -372,7 +372,7 @@ struct FilterChip: View {
                 .fontWeight(.medium)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .background(isSelected ? Color.primaryPink : Color.gray.opacity(0.1))
+                .background(isSelected ? Color.smartPink : Color.smartLightGray.opacity(0.3))
                 .foregroundColor(isSelected ? .white : .primary)
                 .cornerRadius(20)
         }
@@ -402,8 +402,8 @@ struct TagFilterSheet: View {
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 12)
                                 .frame(maxWidth: .infinity)
-                                .background(Color.primaryPink.opacity(0.1))
-                                .foregroundColor(.primaryPink)
+                                .background(Color.smartPink.opacity(0.1))
+                                .foregroundColor(.smartPink)
                                 .cornerRadius(12)
                         }
                         .bounceOnTap()

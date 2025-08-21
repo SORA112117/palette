@@ -216,10 +216,10 @@ struct FAQItemView: View {
             HStack {
                 Text(item.category)
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.smartBlack)
+                    .foregroundColor(.smartPink)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(Color.smartBlack.opacity(0.1))
+                    .background(Color.smartPalePink)
                     .cornerRadius(SmartTheme.cornerRadiusSmall)
                 
                 Spacer()
@@ -271,7 +271,7 @@ struct CategoryTag: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(
-                    isSelected ? Color.smartBlack : Color.surfaceSecondary
+                    isSelected ? Color.smartPink : Color.surfaceSecondary
                 )
                 .cornerRadius(SmartTheme.cornerRadiusMedium)
         }

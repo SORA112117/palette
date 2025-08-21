@@ -280,10 +280,10 @@ struct LicenseItemView: View {
                     HStack {
                         Text(license.licenseType)
                             .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(.smartBlack)
+                            .foregroundColor(.smartPink)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(Color.smartBlack.opacity(0.1))
+                            .background(Color.smartPalePink)
                             .cornerRadius(SmartTheme.cornerRadiusSmall)
                         
                         Spacer()

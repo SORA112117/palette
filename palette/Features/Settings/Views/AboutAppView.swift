@@ -44,7 +44,7 @@ struct AboutAppView: View {
             RoundedRectangle(cornerRadius: 20)
                 .fill(
                     LinearGradient(
-                        colors: [Color.smartBlack, Color.smartDarkGray],
+                        colors: [Color.smartPink, Color.smartLightPink],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -162,7 +162,7 @@ struct AboutAppView: View {
     // MARK: - Developer Section
     private var developerSection: some View {
         VStack(spacing: 12) {
-            Text("Made with ❤️ by Claude")
+            Text("Made with 💖 by Claude")
                 .smartText(.caption)
             
             Text("このアプリは色彩の美しさを大切にする全ての人のために作られました。")
@@ -183,9 +183,9 @@ struct FeatureRow: View {
         HStack(spacing: 16) {
             Image(systemName: icon)
                 .font(.system(size: 24))
-                .foregroundColor(.smartBlack)
+                .foregroundColor(.smartPink)
                 .frame(width: 40, height: 40)
-                .background(Color.smartBlack.opacity(0.1))
+                .background(Color.smartPalePink)
                 .clipShape(Circle())
             
             VStack(alignment: .leading, spacing: 4) {
