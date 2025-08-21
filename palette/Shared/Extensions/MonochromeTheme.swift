@@ -7,57 +7,68 @@
 
 import SwiftUI
 
-// MARK: - モノクロ・スマートテーマ
+// MARK: - ピンク＆ホワイトテーマ
 extension Color {
     
-    // MARK: - Monochrome Color Palette
+    // MARK: - Pink & White Color Palette
     
-    /// 純黒 - 最重要テキスト・アイコン
-    static let smartBlack = Color(red: 0.05, green: 0.05, blue: 0.05)
+    /// 濃いピンク - メインアクセント・重要ボタン
+    static let smartPink = Color(red: 1.0, green: 0.4, blue: 0.6)
     
-    /// ダークグレー - 主要テキスト・ボタン
-    static let smartDarkGray = Color(red: 0.25, green: 0.25, blue: 0.25)
+    /// 淡いピンク - 二次的アクセント・ホバー状態
+    static let smartLightPink = Color(red: 1.0, green: 0.8, blue: 0.88)
     
-    /// ミディアムグレー - 二次テキスト・アイコン
-    static let smartMediumGray = Color(red: 0.50, green: 0.50, blue: 0.50)
+    /// 薄いピンク - 背景・選択状態
+    static let smartPaleP ink = Color(red: 1.0, green: 0.93, blue: 0.96)
     
-    /// ライトグレー - 区切り線・背景
-    static let smartLightGray = Color(red: 0.75, green: 0.75, blue: 0.75)
+    /// グレーピンク - テキスト・ボーダー
+    static let smartGrayPink = Color(red: 0.8, green: 0.7, blue: 0.75)
+    
+    /// ソフトグレー - 二次テキスト
+    static let smartSoftGray = Color(red: 0.65, green: 0.65, blue: 0.65)
+    
+    /// ライトグレー - 補助要素
+    static let smartLightGray = Color(red: 0.9, green: 0.9, blue: 0.9)
     
     /// オフホワイト - カード背景
-    static let smartOffWhite = Color(red: 0.97, green: 0.97, blue: 0.97)
+    static let smartOffWhite = Color(red: 0.98, green: 0.98, blue: 0.98)
     
     /// 純白 - 背景・ハイライト
     static let smartWhite = Color.white
     
-    // MARK: - Accent Colors (minimal usage)
+    // MARK: - Accent Colors
     
-    /// アクセント - 成功時のみ使用
-    static let smartAccent = Color(red: 0.15, green: 0.15, blue: 0.15)
+    /// アクセント - アクション時使用
+    static let smartAccent = Color(red: 1.0, green: 0.4, blue: 0.6)
     
     /// エラー - 必要最小限
-    static let smartError = Color(red: 0.30, green: 0.30, blue: 0.30)
+    static let smartError = Color(red: 0.95, green: 0.3, blue: 0.4)
+    
+    // MARK: - Legacy aliases for compatibility
+    static let smartBlack = Color(red: 0.3, green: 0.3, blue: 0.3)
+    static let smartDarkGray = Color(red: 0.5, green: 0.5, blue: 0.5)
+    static let smartMediumGray = Color(red: 0.65, green: 0.65, blue: 0.65)
     
     // MARK: - Semantic Colors
     
     /// 主要テキスト
-    static let textPrimary = Color.smartBlack
-    static let textSecondary = Color.smartDarkGray
-    static let textTertiary = Color.smartMediumGray
+    static let textPrimary = Color(red: 0.2, green: 0.2, blue: 0.2)
+    static let textSecondary = Color.smartSoftGray
+    static let textTertiary = Color.smartGrayPink
     static let textQuaternary = Color.smartLightGray
     
     /// アイコン
-    static let iconPrimary = Color.smartBlack
-    static let iconSecondary = Color.smartDarkGray
-    static let iconTertiary = Color.smartMediumGray
+    static let iconPrimary = Color.smartPink
+    static let iconSecondary = Color.smartGrayPink
+    static let iconTertiary = Color.smartSoftGray
     
     /// 背景
     static let backgroundPrimary = Color.smartWhite
-    static let backgroundSecondary = Color.smartOffWhite
+    static let backgroundSecondary = Color.smartPalePink
     
     /// ボーダー・区切り線
-    static let borderPrimary = Color.smartLightGray
-    static let borderSecondary = Color.smartLightGray.opacity(0.5)
+    static let borderPrimary = Color.smartLightPink
+    static let borderSecondary = Color.smartLightPink.opacity(0.5)
     
     /// 表面・カード
     static let surfacePrimary = Color.smartWhite
@@ -66,16 +77,16 @@ extension Color {
     // MARK: - Interactive States
     
     /// プレス状態
-    static let statePressed = Color.smartDarkGray.opacity(0.1)
+    static let statePressed = Color.smartPink.opacity(0.15)
     
     /// ホバー状態
-    static let stateHover = Color.smartMediumGray.opacity(0.08)
+    static let stateHover = Color.smartLightPink.opacity(0.3)
     
     /// 選択状態
-    static let stateSelected = Color.smartDarkGray.opacity(0.15)
+    static let stateSelected = Color.smartPink.opacity(0.2)
     
     /// フォーカス状態
-    static let stateFocus = Color.smartBlack.opacity(0.1)
+    static let stateFocus = Color.smartPink.opacity(0.1)
 }
 
 // MARK: - スマートテーマ設定
@@ -89,15 +100,15 @@ struct SmartTheme {
     static let cornerRadiusLarge: CGFloat = 12
     static let cornerRadiusXLarge: CGFloat = 16
     
-    /// シャドウ設定（最小限）
-    static let shadowColor = Color.smartBlack.opacity(0.04)
-    static let shadowRadius: CGFloat = 4
-    static let shadowOffset = CGSize(width: 0, height: 1)
+    /// シャドウ設定（ソフトピンク）
+    static let shadowColor = Color.smartPink.opacity(0.08)
+    static let shadowRadius: CGFloat = 6
+    static let shadowOffset = CGSize(width: 0, height: 2)
     
     /// エレベーション（シャドウレイヤー）
-    static let elevationLow = (color: Color.smartBlack.opacity(0.02), radius: CGFloat(2), offset: CGSize(width: 0, height: 1))
-    static let elevationMedium = (color: Color.smartBlack.opacity(0.04), radius: CGFloat(4), offset: CGSize(width: 0, height: 2))
-    static let elevationHigh = (color: Color.smartBlack.opacity(0.08), radius: CGFloat(8), offset: CGSize(width: 0, height: 4))
+    static let elevationLow = (color: Color.smartPink.opacity(0.05), radius: CGFloat(3), offset: CGSize(width: 0, height: 1))
+    static let elevationMedium = (color: Color.smartPink.opacity(0.08), radius: CGFloat(6), offset: CGSize(width: 0, height: 3))
+    static let elevationHigh = (color: Color.smartPink.opacity(0.12), radius: CGFloat(10), offset: CGSize(width: 0, height: 5))
     
     /// スペーシング（8dpベース）
     static let spacingXS: CGFloat = 4
@@ -149,7 +160,7 @@ extension View {
                     .foregroundColor(.smartWhite)
                     .background(
                         RoundedRectangle(cornerRadius: SmartTheme.cornerRadiusMedium)
-                            .fill(isPressed ? Color.smartMediumGray : Color.smartBlack)
+                            .fill(isPressed ? Color.smartPink.opacity(0.8) : Color.smartPink)
                     )
             case .secondary:
                 self

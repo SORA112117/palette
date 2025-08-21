@@ -9,21 +9,12 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var diContainer = DIContainer.shared
-    
-    private var router: any NavigationRouterProtocol {
-        diContainer.navigationRouter
-    }
+    @StateObject private var router = NavigationRouter.shared
     
     var body: some View {
-        TabView(selection: Binding(
-            get: { router.selectedTab },
-            set: { router.selectedTab = $0 }
-        )) {
+        TabView(selection: $router.selectedTab) {
             // ホームタブ
-            NavigationStack(path: Binding(
-                get: { router.homePath },
-                set: { router.homePath = $0 }
-            )) {
+            NavigationStack(path: $router.homePath) {
                 HomeView()
                     .withDependencies(diContainer)
                     .navigationDestination(for: NavigationDestination.self) { destination in
@@ -37,10 +28,7 @@ struct ContentView: View {
             .tag(AppTab.home)
             
             // ギャラリータブ
-            NavigationStack(path: Binding(
-                get: { router.galleryPath },
-                set: { router.galleryPath = $0 }
-            )) {
+            NavigationStack(path: $router.galleryPath) {
                 GalleryView()
                     .withDependencies(diContainer)
                     .navigationDestination(for: NavigationDestination.self) { destination in
@@ -54,10 +42,7 @@ struct ContentView: View {
             .tag(AppTab.gallery)
             
             // 設定タブ
-            NavigationStack(path: Binding(
-                get: { router.settingsPath },
-                set: { router.settingsPath = $0 }
-            )) {
+            NavigationStack(path: $router.settingsPath) {
                 SettingsView()
                     .withDependencies(diContainer)
                     .navigationDestination(for: NavigationDestination.self) { destination in
@@ -71,22 +56,13 @@ struct ContentView: View {
             .tag(AppTab.settings)
         }
         .tint(Color(red: 1.0, green: 0.4, blue: 0.6))
-        .sheet(item: Binding(
-            get: { router.presentedSheet },
-            set: { router.presentedSheet = $0 }
-        )) { sheet in
+        .sheet(item: $router.presentedSheet) { sheet in
             sheetView(sheet)
         }
-        .fullScreenCover(item: Binding(
-            get: { router.presentedFullScreenCover },
-            set: { router.presentedFullScreenCover = $0 }
-        )) { cover in
+        .fullScreenCover(item: $router.presentedFullScreenCover) { cover in
             fullScreenCoverView(cover)
         }
-        .alert(item: Binding(
-            get: { router.alertItem },
-            set: { router.alertItem = $0 }
-        )) { alertItem in
+        .alert(item: $router.alertItem) { alertItem in
             if let secondaryButton = alertItem.secondaryButton {
                 Alert(
                     title: Text(alertItem.title),

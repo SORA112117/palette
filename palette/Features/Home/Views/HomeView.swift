@@ -97,7 +97,7 @@ struct HomeView: View {
                 title: "手動ピッカーで作成",
                 subtitle: "画像内の好きな場所から色を選択",
                 icon: "eyedropper.halffull",
-                iconColor: Color.smartBlack,
+                iconColor: Color.smartPink,
                 action: {
                     diContainer.navigationRouter.homePath.append(NavigationDestination.manualColorPicker)
                 }
@@ -108,7 +108,7 @@ struct HomeView: View {
                 title: "自動抽出で作成",
                 subtitle: "色数を指定して自動で抽出",
                 icon: "wand.and.stars",
-                iconColor: Color.smartDarkGray,
+                iconColor: Color.smartPink.opacity(0.8),
                 action: {
                     diContainer.navigationRouter.homePath.append(NavigationDestination.automaticExtraction)
                 }
@@ -119,7 +119,7 @@ struct HomeView: View {
                 title: "手動で作成",
                 subtitle: "カラーピッカーで自由に選択",
                 icon: "paintpalette.fill",
-                iconColor: Color.smartMediumGray,
+                iconColor: Color.smartPink.opacity(0.6),
                 action: {
                     diContainer.navigationRouter.homePath.append(NavigationDestination.manualPaletteCreation)
                 }
@@ -147,7 +147,7 @@ struct MainOptionCard: View {
                     .font(.system(size: 40, weight: .medium))
                     .foregroundColor(iconColor)
                     .frame(width: 60, height: 60)
-                    .background(iconColor.opacity(0.1))
+                    .background(Color.smartPalePink)
                     .clipShape(Circle())
                 
                 // テキスト

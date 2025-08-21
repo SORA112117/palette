@@ -80,4 +80,51 @@
 
 ---
 
-*Last Updated: 2025-08-14*
+## [2025-08-22 06:40] ホーム画面からの画面遷移が動作しない問題
+
+### エラー内容
+- **エラーメッセージ**: なし（実行時の画面遷移が反応しない）
+- **発生状況**: ホーム画面のメニューカード（手動ピッカー、自動抽出、手動作成）をタップしても画面遷移しない
+
+### 根本原因
+- ContentView.swiftで`NavigationRouter`を計算プロパティ経由で取得していたため、`@Published`プロパティの変更が正しく監視されていなかった
+- NavigationRouterがObservableObjectとしてContentViewに正しくバインドされていなかった
+
+### 解決手順
+1. ContentView.swiftの11-12行目で`NavigationRouter`を`@StateObject`として直接保持するよう変更
+   ```swift
+   // 変更前
+   private var router: any NavigationRouterProtocol {
+       diContainer.navigationRouter
+   }
+   
+   // 変更後
+   @StateObject private var router = NavigationRouter.shared
+   ```
+
+2. NavigationStackのpath引数を直接`$router.homePath`などにバインディング
+   ```swift
+   // 変更前
+   NavigationStack(path: Binding(
+       get: { router.homePath },
+       set: { router.homePath = $0 }
+   )) {
+   
+   // 変更後
+   NavigationStack(path: $router.homePath) {
+   ```
+
+3. sheet、fullScreenCover、alertのバインディングも同様に修正
+
+### 予防策
+- ObservableObjectを使用する際は、`@StateObject`または`@ObservedObject`で正しくラップする
+- 計算プロパティ経由でObservableObjectにアクセスしない
+- SwiftUIのデータバインディングは直接的な`$`プレフィックスを使用する
+
+### 関連ファイル
+- `/Users/sora1/CODE/palette/palette/ContentView.swift`
+- `/Users/sora1/CODE/palette/palette/Core/Utilities/NavigationRouter.swift`
+
+---
+
+*Last Updated: 2025-08-22*

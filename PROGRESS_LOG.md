@@ -192,4 +192,37 @@
 
 ---
 
-*Last Updated: 2025-08-14*
+### 2025-08-22 06:45 ナビゲーション修正とUI改善
+
+#### 実装内容
+- ホーム画面のメニュー選択時に画面遷移しない問題を解決
+- アプリの色使いを白とピンクのテーマに統一
+- UIをよりスマートで可愛い感じに改善
+- MonochromeTheme.swiftをピンク＆ホワイトテーマに変更
+
+#### 重要な決定事項
+- NavigationRouterを`@StateObject`として直接保持する方式に変更
+- 色テーマを白×ピンクのフェミニンな配色に統一
+- メインアクセントカラーを`Color(red: 1.0, green: 0.4, blue: 0.6)`に設定
+- シャドウもピンク系の柔らかい影に変更
+
+#### 変更・作成ファイル
+- `/Users/sora1/CODE/palette/palette/ContentView.swift`（NavigationRouter連携修正）
+- `/Users/sora1/CODE/palette/palette/Shared/Extensions/MonochromeTheme.swift`（ピンクテーマ実装）
+- `/Users/sora1/CODE/palette/palette/Features/Home/Views/HomeView.swift`（カラー変更）
+- `/Users/sora1/CODE/palette/palette/Features/ColorExtraction/Views/ManualColorPickerView.swift`（ボタンカラー変更）
+- `/Users/sora1/CODE/palette/ERROR_RESOLUTION_LOG.md`（エラー解決記録追加）
+
+#### 技術的な改善点
+- ObservableObjectのバインディングを正しく修正
+- 計算プロパティ経由でのObservableObjectアクセスを廃止
+- SwiftUIの`$`プレフィックスを使用した直接的なバインディング実装
+
+#### 次のステップ
+- アプリの動作確認とテスト
+- 残りの画面のUI調整
+- パフォーマンス最適化
+
+---
+
+*Last Updated: 2025-08-22*

@@ -99,7 +99,7 @@ struct ManualColorPickerView: View {
                 .smartButton(style: .primary)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .background(Color.smartBlack)
+                .background(Color.smartPink)
                 .foregroundColor(.white)
                 .cornerRadius(SmartTheme.cornerRadiusMedium)
             }
