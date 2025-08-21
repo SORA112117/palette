@@ -442,6 +442,36 @@ class StorageService: StorageServiceProtocol, ObservableObject {
             }
         }
     }
+    
+    /// 全てのパレットを取得（エクスポート用）
+    func loadAllPalettes() async -> [ColorPalette] {
+        return await withCheckedContinuation { continuation in
+            DispatchQueue.main.async {
+                continuation.resume(returning: self.savedPalettes)
+            }
+        }
+    }
+    
+    /// パレットをインポート
+    func importPalettes(_ palettes: [ColorPalette]) async {
+        for palette in palettes {
+            // 重複IDを避けるため新しいIDを生成
+            let newPalette = ColorPalette(
+                id: UUID(),
+                createdAt: Date(),
+                sourceImageData: palette.sourceImageData,
+                colors: palette.colors,
+                title: (palette.title ?? "無題のパレット") + " (インポート)",
+                tags: palette.tags
+            )
+            
+            do {
+                try await savePalette(newPalette)
+            } catch {
+                print("Failed to import palette: \(error)")
+            }
+        }
+    }
 }
 
 // MARK: - Supporting Types

@@ -64,6 +64,18 @@ struct SettingsView: View {
         } message: {
             Text("一時ファイルとキャッシュが削除されます。")
         }
+        .alert("エクスポートエラー", isPresented: $viewModel.showingExportErrorAlert) {
+            Button("OK") {}
+        } message: {
+            Text(viewModel.exportErrorMessage)
+        }
+        .fileImporter(
+            isPresented: $viewModel.showingImportPicker,
+            allowedContentTypes: [.json],
+            allowsMultipleSelection: false
+        ) { result in
+            viewModel.handleImportResult(result)
+        }
     }
     
     // MARK: - App Info Section
@@ -72,7 +84,7 @@ struct SettingsView: View {
             NavigationLink(destination: AboutAppView()) {
                 HStack {
                     Image(systemName: "info.circle.fill")
-                        .foregroundColor(.smartBlack)
+                        .foregroundColor(.smartPink)
                         .frame(width: 24, height: 24)
                     
                     Text("このアプリについて")
@@ -87,7 +99,7 @@ struct SettingsView: View {
             }) {
                 HStack {
                     Image(systemName: "star.fill")
-                        .foregroundColor(.smartBlack)
+                        .foregroundColor(.smartPink)
                         .frame(width: 24, height: 24)
                     
                     Text("アプリを評価する")
@@ -107,7 +119,7 @@ struct SettingsView: View {
             }) {
                 HStack {
                     Image(systemName: "square.and.arrow.up")
-                        .foregroundColor(.smartBlack)
+                        .foregroundColor(.smartPink)
                         .frame(width: 24, height: 24)
                     
                     Text("友達に共有")
@@ -148,14 +160,14 @@ struct SettingsView: View {
             Toggle(isOn: $hapticFeedback) {
                 HStack {
                     Image(systemName: "waveform")
-                        .foregroundColor(.smartBlack)
+                        .foregroundColor(.smartPink)
                         .frame(width: 24, height: 24)
                     
                     Text("触覚フィードバック")
                         .smartText(.body)
                 }
             }
-            .tint(.smartBlack)
+            .tint(.smartPink)
         } header: {
             Text("外観")
                 .smartText(.caption)
@@ -168,24 +180,40 @@ struct SettingsView: View {
             Toggle(isOn: $autoSavePalettes) {
                 HStack {
                     Image(systemName: "externaldrive.fill")
-                        .foregroundColor(.smartBlack)
+                        .foregroundColor(.smartPink)
                         .frame(width: 24, height: 24)
                     
                     Text("パレットを自動保存")
                         .smartText(.body)
                 }
             }
-            .tint(.smartBlack)
+            .tint(.smartPink)
             
             Button(action: {
                 viewModel.exportAllPalettes()
             }) {
                 HStack {
                     Image(systemName: "square.and.arrow.up.on.square")
-                        .foregroundColor(.smartBlack)
+                        .foregroundColor(.smartPink)
                         .frame(width: 24, height: 24)
                     
                     Text("すべてのパレットをエクスポート")
+                        .smartText(.body)
+                    
+                    Spacer()
+                }
+            }
+            .buttonStyle(PlainButtonStyle())
+            
+            Button(action: {
+                viewModel.showingImportPicker = true
+            }) {
+                HStack {
+                    Image(systemName: "square.and.arrow.down.on.square")
+                        .foregroundColor(.smartPink)
+                        .frame(width: 24, height: 24)
+                    
+                    Text("パレットをインポート")
                         .smartText(.body)
                     
                     Spacer()
@@ -198,7 +226,7 @@ struct SettingsView: View {
             }) {
                 HStack {
                     Image(systemName: "trash")
-                        .foregroundColor(.smartBlack)
+                        .foregroundColor(.smartPink)
                         .frame(width: 24, height: 24)
                     
                     VStack(alignment: .leading, spacing: 2) {
@@ -242,7 +270,7 @@ struct SettingsView: View {
             NavigationLink(destination: HelpCenterView()) {
                 HStack {
                     Image(systemName: "questionmark.circle.fill")
-                        .foregroundColor(.smartBlack)
+                        .foregroundColor(.smartPink)
                         .frame(width: 24, height: 24)
                     
                     Text("ヘルプセンター")
@@ -257,7 +285,7 @@ struct SettingsView: View {
             }) {
                 HStack {
                     Image(systemName: "envelope.fill")
-                        .foregroundColor(.smartBlack)
+                        .foregroundColor(.smartPink)
                         .frame(width: 24, height: 24)
                     
                     Text("お問い合わせ")
@@ -275,7 +303,7 @@ struct SettingsView: View {
             NavigationLink(destination: FAQView()) {
                 HStack {
                     Image(systemName: "bubble.left.and.bubble.right.fill")
-                        .foregroundColor(.smartBlack)
+                        .foregroundColor(.smartPink)
                         .frame(width: 24, height: 24)
                     
                     Text("よくある質問")
@@ -296,7 +324,7 @@ struct SettingsView: View {
             NavigationLink(destination: PrivacyPolicyView()) {
                 HStack {
                     Image(systemName: "hand.raised.fill")
-                        .foregroundColor(.smartBlack)
+                        .foregroundColor(.smartPink)
                         .frame(width: 24, height: 24)
                     
                     Text("プライバシーポリシー")
@@ -309,7 +337,7 @@ struct SettingsView: View {
             NavigationLink(destination: TermsOfServiceView()) {
                 HStack {
                     Image(systemName: "doc.text.fill")
-                        .foregroundColor(.smartBlack)
+                        .foregroundColor(.smartPink)
                         .frame(width: 24, height: 24)
                     
                     Text("利用規約")
@@ -322,7 +350,7 @@ struct SettingsView: View {
             NavigationLink(destination: LicensesView()) {
                 HStack {
                     Image(systemName: "scroll.fill")
-                        .foregroundColor(.smartBlack)
+                        .foregroundColor(.smartPink)
                         .frame(width: 24, height: 24)
                     
                     Text("ライセンス")
@@ -369,7 +397,10 @@ class SettingsViewModel: ObservableObject {
     @Published var showingClearDataAlert = false
     @Published var showingClearCacheAlert = false
     @Published var showingMailComposer = false
+    @Published var showingExportErrorAlert = false
+    @Published var showingImportPicker = false
     @Published var cacheSize = "計算中..."
+    @Published var exportErrorMessage = ""
     
     var appVersion: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
@@ -408,8 +439,61 @@ class SettingsViewModel: ObservableObject {
     }
     
     func exportAllPalettes() {
-        // 実装予定
-        HapticManager.shared.lightImpact()
+        Task {
+            do {
+                let allPalettes = await StorageService.shared.loadAllPalettes()
+                
+                guard !allPalettes.isEmpty else {
+                    await MainActor.run {
+                        self.showingExportErrorAlert = true
+                        self.exportErrorMessage = "エクスポートするパレットがありません。"
+                    }
+                    return
+                }
+                
+                let exportData = ExportData(
+                    version: "1.0",
+                    exportDate: Date(),
+                    palettes: allPalettes,
+                    totalCount: allPalettes.count
+                )
+                
+                let jsonData = try JSONEncoder().encode(exportData)
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
+                let fileName = "推しパレ_エクスポート_\(dateFormatter.string(from: Date())).json"
+                
+                await MainActor.run {
+                    self.shareExportData(jsonData, fileName: fileName)
+                    HapticManager.shared.success()
+                }
+            } catch {
+                await MainActor.run {
+                    self.showingExportErrorAlert = true
+                    self.exportErrorMessage = "エクスポートに失敗しました: \(error.localizedDescription)"
+                    HapticManager.shared.error()
+                }
+            }
+        }
+    }
+    
+    private func shareExportData(_ data: Data, fileName: String) {
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        
+        do {
+            try data.write(to: tempURL)
+            
+            let activityVC = UIActivityViewController(activityItems: [tempURL], applicationActivities: nil)
+            activityVC.excludedActivityTypes = [.markupAsPDF]
+            
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let rootViewController = windowScene.windows.first?.rootViewController {
+                rootViewController.present(activityVC, animated: true)
+            }
+        } catch {
+            self.showingExportErrorAlert = true
+            self.exportErrorMessage = "ファイルの保存に失敗しました。"
+        }
     }
     
     func requestAppReview() {
@@ -435,6 +519,39 @@ class SettingsViewModel: ObservableObject {
             rootViewController.present(activityVC, animated: true)
         }
     }
+    
+    func handleImportResult(_ result: Result<[URL], Error>) {
+        Task {
+            do {
+                let urls = try result.get()
+                guard let url = urls.first else { return }
+                
+                let data = try Data(contentsOf: url)
+                let exportData = try JSONDecoder().decode(ExportData.self, from: data)
+                
+                await StorageService.shared.importPalettes(exportData.palettes)
+                
+                await MainActor.run {
+                    // インポート成功の通知
+                    HapticManager.shared.success()
+                }
+            } catch {
+                await MainActor.run {
+                    self.showingExportErrorAlert = true
+                    self.exportErrorMessage = "インポートに失敗しました: \(error.localizedDescription)"
+                    HapticManager.shared.error()
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Export Data Model
+struct ExportData: Codable {
+    let version: String
+    let exportDate: Date
+    let palettes: [ColorPalette]
+    let totalCount: Int
 }
 
 // MARK: - Preview

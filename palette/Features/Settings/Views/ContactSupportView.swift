@@ -91,7 +91,7 @@ struct ContactSupportView: View {
             HStack(spacing: 16) {
                 Image(systemName: "envelope.circle.fill")
                     .font(.system(size: 48))
-                    .foregroundColor(.smartBlack)
+                    .foregroundColor(.smartPink)
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("サポートにお問い合わせ")
@@ -265,7 +265,7 @@ struct QuickHelpCard: View {
             HStack(spacing: 12) {
                 Image(systemName: icon)
                     .font(.system(size: 20))
-                    .foregroundColor(.smartBlack)
+                    .foregroundColor(.smartPink)
                     .frame(width: 32, height: 32)
                 
                 VStack(alignment: .leading, spacing: 4) {
