@@ -8,7 +8,10 @@
       "Bash(swiftc:*)",
       "Bash(/dev/null)",
       "Bash(find:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []
