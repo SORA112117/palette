@@ -19,7 +19,7 @@ extension Color {
     static let smartLightPink = Color(red: 1.0, green: 0.8, blue: 0.88)
     
     /// 薄いピンク - 背景・選択状態
-    static let smartPaleP ink = Color(red: 1.0, green: 0.93, blue: 0.96)
+    static let smartPalePink = Color(red: 1.0, green: 0.93, blue: 0.96)
     
     /// グレーピンク - テキスト・ボーダー
     static let smartGrayPink = Color(red: 0.8, green: 0.7, blue: 0.75)

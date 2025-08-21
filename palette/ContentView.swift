@@ -126,9 +126,11 @@ struct ContentView: View {
     @ViewBuilder
     private func sheetView(_ sheet: SheetDestination) -> some View {
         switch sheet {
-        case .paletteEditor(let palette):
+        case .paletteEditor(_):
             // TODO: PaletteEditSheetの実装
-            PaletteDetailView(palette: palette)
+            // PaletteDetailView(palette: palette)
+            Text("パレット編集（開発中）")
+                .padding()
         case .colorPicker(_):
             // TODO: ColorPickerSheetの実装
             Text("カラーピッカー（開発中）")
@@ -153,7 +155,7 @@ struct ContentView: View {
         switch cover {
         case .colorExtraction(let image):
             ColorExtractionView(sourceImage: image)
-        case .wallpaperCreator(let palette):
+        case .wallpaperCreator(_):
             // TODO: WallpaperCreatorViewの実装
             NavigationView {
                 VStack {

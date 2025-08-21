@@ -127,4 +127,59 @@
 
 ---
 
+## [2025-08-22 06:47] コンパイルエラー・警告の修正
+
+### エラー内容
+1. **MonochromeTheme.swift**:
+   - `Type 'Color' has no member 'smartPalePink'` - タイポによる識別子エラー
+2. **SettingsView.swift**:
+   - `'SKStoreReviewController' was deprecated in iOS 18.0` - 非推奨APIの使用
+3. **ContentView.swift**:
+   - `Immutable value 'palette' was never used` - 未使用変数警告
+
+### 根本原因
+1. MonochromeTheme.swift: `smartPaleP ink`にスペースが誤って入っていた
+2. SettingsView.swift: iOS 18でSKStoreReviewControllerが非推奨になり、新しいAppStore APIへの移行が必要
+3. ContentView.swift: switch文でパレット変数を受け取るが使用していない箇所があった
+
+### 解決手順
+1. MonochromeTheme.swift 22行目のタイポを修正:
+   ```swift
+   // 変更前
+   static let smartPaleP ink = Color(red: 1.0, green: 0.93, blue: 0.96)
+   // 変更後
+   static let smartPalePink = Color(red: 1.0, green: 0.93, blue: 0.96)
+   ```
+
+2. SettingsView.swift requestAppReview関数をiOSバージョンで分岐:
+   ```swift
+   if #available(iOS 18.0, *) {
+       AppStore.requestReview(in: scene)
+   } else {
+       SKStoreReviewController.requestReview(in: scene)
+   }
+   ```
+
+3. ContentView.swift switch文の未使用変数をワイルドカードに変更:
+   ```swift
+   // 変更前
+   case .paletteEditor(let palette):
+   case .wallpaperCreator(let palette):
+   // 変更後
+   case .paletteEditor(_):
+   case .wallpaperCreator(_):
+   ```
+
+### 予防策
+- 変数名のタイポを防ぐため、コード補完を活用する
+- 新しいiOSバージョンでの非推奨APIは#availableで分岐処理する
+- switch文で値を使用しない場合はワイルドカード`_`を使用する
+
+### 関連ファイル
+- `/Users/sora1/CODE/palette/palette/Shared/Extensions/MonochromeTheme.swift`
+- `/Users/sora1/CODE/palette/palette/Features/Settings/Views/SettingsView.swift`
+- `/Users/sora1/CODE/palette/palette/ContentView.swift`
+
+---
+
 *Last Updated: 2025-08-22*

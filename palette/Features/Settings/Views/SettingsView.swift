@@ -413,8 +413,16 @@ class SettingsViewModel: ObservableObject {
     }
     
     func requestAppReview() {
-        if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-            SKStoreReviewController.requestReview(in: scene)
+        if #available(iOS 18.0, *) {
+            // iOS 18以降の新しいAPI
+            if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+                AppStore.requestReview(in: scene)
+            }
+        } else {
+            // iOS 18未満の従来のAPI
+            if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+                SKStoreReviewController.requestReview(in: scene)
+            }
         }
     }
     
